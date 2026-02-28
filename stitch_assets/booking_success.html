@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Booking Confirmed - SmartBook</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../styles/globals.css">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#258cf4" },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col items-center justify-center p-6">
+    <div class="max-w-md w-full text-center space-y-8">
+        <div
+            class="size-24 bg-green-100 dark:bg-green-900/30 text-green-500 rounded-full flex items-center justify-center mx-auto shadow-xl">
+            <span class="material-symbols-outlined text-6xl">check_circle</span>
+        </div>
+
+        <div class="space-y-4">
+            <h1 class="text-4xl font-black tracking-tight">Booking Confirmed!</h1>
+            <p class="text-slate-500">Your appointment has been successfully scheduled. We've sent a confirmation email
+                to your inbox.</p>
+        </div>
+
+        <div class="card p-6 text-left space-y-4" id="booking-details">
+            <!-- Filled by JS -->
+        </div>
+
+        <button class="btn btn-primary w-full py-4 text-lg" onclick="window.location.href='step_1_patient_status.html'">
+            Book Another Appointment
+        </button>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const booking = JSON.parse(sessionStorage.getItem('confirmedBooking'));
+            if (booking) {
+                const details = document.getElementById('booking-details');
+                const date = new Date(booking.scheduled_datetime).toLocaleString();
+                details.innerHTML = `
+                    <div class="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                        <span class="text-slate-400 text-sm font-medium uppercase tracking-wider">Date & Time</span>
+                        <span class="font-bold">${date}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400 text-sm font-medium uppercase tracking-wider">Patient Name</span>
+                        <span class="font-bold">${sessionStorage.getItem('patientData') ? JSON.parse(sessionStorage.getItem('patientData')).fullName : 'Patient'}</span>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+
+</html>

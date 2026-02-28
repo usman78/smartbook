@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SmartBook Admin Dashboard - Ascender</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/styles/globals.css">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#258cf4",
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside
+            class="w-72 flex-shrink-0 flex flex-col p-6 gap-6 border-r border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-background-dark/50 backdrop-blur-md">
+            <div class="flex items-center gap-3 px-2">
+                <div
+                    class="size-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined font-bold">rocket_launch</span>
+                </div>
+                <h1 class="text-2xl font-black tracking-tighter">SmartBook</h1>
+            </div>
+
+            <nav class="flex flex-col gap-2 flex-1">
+                <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-2 px-2">Main Menu</p>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary border border-primary/10"
+                    href="admin_dashboard.html">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="font-bold">Dashboard</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined">calendar_month</span>
+                    <span class="font-medium">Schedule</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined">group</span>
+                    <span class="font-medium">Patients</span>
+                </a>
+                <div class="mt-8">
+                    <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-2 px-2">Operations</p>
+                    <a href="insurance_verification_queue.html"
+                        class="w-full flex items-center justify-between px-4 py-3 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-all">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined">verified_user</span>
+                            <span class="font-medium">Insurance Queue</span>
+                        </div>
+                        <span id="insuranceBadge"
+                            class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                    </a>
+                    <button onclick="showMergeModal()"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-all text-left">
+                        <span class="material-symbols-outlined">merge</span>
+                        <span class="font-medium">Merge Patients</span>
+                    </button>
+                </div>
+            </nav>
+
+            <div class="mt-auto pt-6 border-t border-slate-200 dark:border-slate-800">
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-white/5">
+                    <div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">person</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p id="adminName" class="text-sm font-bold truncate">Loading...</p>
+                        <p class="text-[10px] text-slate-400 uppercase font-black">Admin</p>
+                    </div>
+                    <button onclick="logout()" class="text-slate-400 hover:text-orange-500 transition-colors">
+                        <span class="material-symbols-outlined">logout</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col overflow-hidden bg-white dark:bg-background-dark/20">
+            <!-- Top Navbar -->
+            <header class="h-20 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-8">
+                <div class="flex items-center gap-6">
+                    <div
+                        class="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-slate-800">
+                        <span class="material-symbols-outlined text-primary">calendar_today</span>
+                        <span class="font-bold text-sm">Feb 20, 2026</span>
+                    </div>
+                    <div class="relative">
+                        <span
+                            class="material-symbols-outlined absolute left-3 top-2 text-slate-400 text-xl">search</span>
+                        <input
+                            class="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-slate-800 rounded-lg pl-10 pr-4 py-2 w-80 text-sm outline-none focus:ring-2 focus:ring-primary transition-all"
+                            placeholder="Search..." type="text" />
+                    </div>
+                    <div id="connectionStatus"
+                        class="flex items-center gap-2 text-[10px] font-bold uppercase text-emerald-500">
+                        <div class="size-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                        Live
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="btn btn-primary">
+                        <span class="material-symbols-outlined">add</span>
+                        New Appointment
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="flex-1 overflow-y-auto p-8 space-y-8 selection:bg-primary/30">
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div
+                        class="card p-6 flex items-center gap-5 hover:border-primary/50 transition-all cursor-pointer group">
+                        <div
+                            class="size-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-3xl">event_available</span>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Appointments</p>
+                            <div class="flex items-baseline gap-2">
+                                <h3 id="totalBookings" class="text-3xl font-black">0</h3>
+                                <span class="text-emerald-500 text-xs font-bold">+0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="card p-6 flex items-center gap-5 hover:border-primary/50 transition-all cursor-pointer group">
+                        <div
+                            class="size-14 rounded-xl bg-accent-mint/10 flex items-center justify-center text-accent-mint group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-3xl">payments</span>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Revenue</p>
+                            <div class="flex items-baseline gap-2">
+                                <h3 id="totalRevenue" class="text-3xl font-black">$0</h3>
+                                <span class="text-emerald-500 text-xs font-bold">+0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="card p-6 flex items-center gap-5 hover:border-primary/50 transition-all cursor-pointer group">
+                        <div
+                            class="size-14 rounded-xl bg-accent-orange/10 flex items-center justify-center text-accent-orange group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-3xl">pending_actions</span>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Pending Verification
+                            </p>
+                            <div class="flex items-baseline gap-2">
+                                <h3 id="pendingInsurance" class="text-3xl font-black">0</h3>
+                                <span class="text-slate-400 text-xs font-bold">Queue</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Schedule Section -->
+                <div class="card overflow-hidden">
+                    <div
+                        class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-white/5">
+                        <h2 class="text-xl font-bold">Main Schedule</h2>
+                        <div class="flex gap-3">
+                            <select
+                                class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-1.5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary">
+                                <option>All Doctors</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 dark:bg-white/5">
+                                <tr>
+                                    <th
+                                        class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                        Time</th>
+                                    <th
+                                        class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                        Provider</th>
+                                    <th
+                                        class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                        Patient</th>
+                                    <th
+                                        class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scheduleBody" class="divide-y divide-slate-200 dark:divide-slate-800">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Merge Modal -->
+    <div id="mergeModal"
+        class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+        <div
+            class="bg-white dark:bg-slate-900 rounded-3xl p-8 w-full max-w-md border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <h3 class="text-2xl font-black tracking-tighter mb-6">Merge Patient Records</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Target
+                        Account (Keep This One)</label>
+                    <input id="mergeKeepId" type="text" placeholder="Patient ID"
+                        class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Duplicate
+                        Account (Merge From)</label>
+                    <input id="mergeFromId" type="text" placeholder="Patient ID"
+                        class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                <div class="pt-4 flex gap-3">
+                    <button onclick="hideMergeModal()"
+                        class="flex-1 px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-800 font-bold hover:bg-slate-50 dark:hover:bg-white/5 transition-all">Cancel</button>
+                    <button onclick="executeMerge()" class="flex-1 btn btn-primary">Merge Records</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/api.js"></script>
+    <script src="/js/app.js"></script>
+    async function loadSchedule() {
+    try {
+    // For MVP, we use the dashboard stats endpoint which might need to return appointments too
+    // Or let's assume a generic admin fetch for today's appts
+    const result = await smartbookApi.getInsuranceQueue('confirmed');
+    if (result.success) {
+    renderSchedule(result.data);
+    }
+    } catch (err) {
+    console.error('Failed to load schedule:', err);
+    }
+    }
+
+    function renderSchedule(appointments) {
+    const body = document.getElementById('scheduleBody');
+    body.innerHTML = appointments.length ? '' : '<tr>
+        <td colspan="4" class="p-8 text-center text-slate-400 italic font-medium">No appointments scheduled for today.
+        </td>
+    </tr>';
+
+    appointments.forEach(appt => {
+    const timeStr = new Date(appt.scheduled_datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const isCosmetic = appt.type_name?.toLowerCase().includes('botox') ||
+    appt.type_name?.toLowerCase().includes('filler');
+    const hasHold = appt.payment_info?.paymentStrategy === 'auth_hold' && !appt.payment_info?.captured;
+
+    const row = document.createElement('tr');
+    row.className = 'hover:bg-slate-50 dark:hover:bg-white/5 transition-colors';
+    row.innerHTML = `
+    <td class="px-6 py-5 font-black text-primary">${timeStr}</td>
+    <td class="px-6 py-5 font-bold">${appt.provider_name || 'Unassigned'}</td>
+    <td class="px-6 py-5">
+        <p class="font-bold">${appt.patient_name}</p>
+        <p class="text-[10px] text-slate-400 uppercase font-black">ID: ${appt.patient_id.slice(0, 8)}</p>
+    </td>
+    <td class="px-6 py-5 text-right flex items-center justify-end gap-3">
+        ${isCosmetic && hasHold ? `
+        <button onclick="processNoShow('${appt.id}')"
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 text-orange-500 hover:bg-orange-500 hover:text-white transition-all text-[10px] font-bold uppercase tracking-widest">
+            <span class="material-symbols-outlined text-sm">no_accounts</span>
+            No-Show
+        </button>
+        ` : ''}
+        <button class="text-slate-400 hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">edit_note</span>
+        </button>
+    </td>
+    `;
+    body.appendChild(row);
+    });
+    }
+
+    async function processNoShow(id) {
+    if (!confirm('Charge no-show deposit for this appointment?')) return;
+    try {
+    const result = await smartbookApi.processNoShow(id);
+    if (result.success) {
+    alert('No-show fee captured');
+    loadSchedule();
+    } else {
+    alert('Error: ' + result.error);
+    }
+    } catch (err) {
+    console.error('No-show processing failed:', err);
+    }
+    }
+
+    function showMergeModal() {
+    document.getElementById('mergeModal').classList.remove('hidden');
+    }
+
+    function hideMergeModal() {
+    document.getElementById('mergeModal').classList.add('hidden');
+    }
+
+    async function executeMerge() {
+    const keepId = document.getElementById('mergeKeepId').value;
+    const fromId = document.getElementById('mergeFromId').value;
+    if (!keepId || !fromId) return alert('Both IDs required');
+
+    try {
+    const result = await smartbookApi.mergePatients(keepId, fromId);
+    if (result.success) {
+    alert('Patients merged successfully');
+    hideMergeModal();
+    loadSchedule();
+    } else {
+    alert('Error: ' + result.error);
+    }
+    } catch (err) {
+    console.error('Merge failed:', err);
+    }
+    }
+
+    loadDashboardStats();
+    loadSchedule();
+    </script>
+</body>
+
+</html>

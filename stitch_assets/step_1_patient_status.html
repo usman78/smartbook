@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>SmartBook - Patient Status</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="../styles/globals.css">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#258cf4",
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+    <header class="bg-primary px-6 py-4 flex items-center justify-between shadow-lg z-10">
+        <div class="flex items-center gap-3">
+            <div class="bg-white/20 p-2 rounded-lg">
+                <span class="material-symbols-outlined text-white text-2xl">auto_stories</span>
+            </div>
+            <h1 class="text-white text-xl font-bold tracking-tight">SmartBook</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <span class="text-white/80 text-sm font-medium">Step 1 of 6</span>
+            <div class="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
+                <div class="w-1/6 h-full bg-white rounded-full"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 relative flex flex-center px-4 py-12 overflow-hidden">
+        <div class="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/4 w-[500px] h-[500px] opacity-40 pointer-events-none">
+            <div class="w-full h-full bg-gradient-to-br from-primary/40 to-purple-600/20 blur-[80px] rounded-full"></div>
+        </div>
+
+        <div class="relative z-10 w-full max-w-4xl flex flex-col gap-12">
+            <div class="space-y-4 max-w-2xl">
+                <h2 class="text-5xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-none">
+                    Welcome to <span class="text-primary">SmartBook!</span>
+                </h2>
+                <p class="text-xl text-slate-600 dark:text-slate-400 font-medium">
+                    Are you a new or returning patient?
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                <!-- New Patient Card -->
+                <button class="card group relative flex flex-col items-start p-8 text-left outline-none">
+                    <div class="mb-6 p-4 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+                        <span class="material-symbols-outlined text-4xl">person_add</span>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-2xl font-bold dark:text-white group-hover:text-primary transition-colors">I am a NEW patient</h3>
+                        <p class="text-slate-500 dark:text-slate-400 font-normal">First time at this clinic. We'll help you get set up with a new profile.</p>
+                    </div>
+                </button>
+
+                <!-- Returning Patient Card -->
+                <button class="card group relative flex flex-col items-start p-8 text-left outline-none">
+                    <div class="mb-6 p-4 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+                        <span class="material-symbols-outlined text-4xl">account_circle</span>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-2xl font-bold dark:text-white group-hover:text-primary transition-colors">I am a RETURNING patient</h3>
+                        <p class="text-slate-500 dark:text-slate-400 font-normal">I have been here before. We'll pull up your existing records.</p>
+                    </div>
+                </button>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-slate-200 dark:border-slate-800">
+                <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                    <span class="material-symbols-outlined text-sm">info</span>
+                    <span class="text-sm font-medium">Your data is secured with enterprise-grade encryption</span>
+                </div>
+                <button class="btn btn-primary min-w-[200px] h-14 text-lg">
+                    <span>Continue</span>
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="p-6 text-center text-slate-500 dark:text-slate-600 text-xs font-medium uppercase tracking-widest">
+        Powered by SmartBook Intake Systems &copy; 2024
+    </footer>
+
+    <script src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Insurance Verification Modal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../styles/globals.css">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#258cf4",
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-black/80 font-display text-slate-900 dark:text-slate-100 min-h-screen flex items-center justify-center p-4">
+    <!-- Insurance Verification Modal -->
+    <div
+        class="relative w-full max-w-[640px] bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-8 border-b border-slate-100 dark:border-slate-800">
+            <div>
+                <h2 class="text-2xl font-black tracking-tight">Insurance Verification</h2>
+                <p class="text-slate-400 text-sm font-medium mt-1">Verify patient coverage and billing details.</p>
+            </div>
+            <button class="text-slate-400 hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-3xl">close</span>
+            </button>
+        </div>
+
+        <div class="p-8 space-y-8">
+            <!-- Patient Info Section -->
+            <section>
+                <h3 class="text-[10px] font-black uppercase text-primary tracking-widest mb-4">Patient Details</h3>
+                <div
+                    class="grid grid-cols-2 gap-px bg-slate-100 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-xl overflow-hidden">
+                    <div class="bg-white dark:bg-background-dark p-4">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Name</p>
+                        <p class="font-bold">Johnathan Doe</p>
+                    </div>
+                    <div class="bg-white dark:bg-background-dark p-4">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">DOB</p>
+                        <p class="font-bold">03/15/1985</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Verification Options -->
+            <section>
+                <h3 class="text-[10px] font-black uppercase text-primary tracking-widest mb-4">Verification Result</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="card p-4 cursor-pointer border-2 border-primary bg-primary/5 transition-all">
+                        <input checked name="status" type="radio" class="sr-only" />
+                        <span class="material-symbols-outlined text-primary mb-2">verified</span>
+                        <p class="font-bold">Verified</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">Active Coverage</p>
+                    </label>
+                    <label
+                        class="card p-4 cursor-pointer border-2 border-slate-100 dark:border-slate-800 hover:border-primary/50 transition-all">
+                        <input name="status" type="radio" class="sr-only" />
+                        <span class="material-symbols-outlined text-slate-400 mb-2">cancel</span>
+                        <p class="font-bold">Failed</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">No Active Policy</p>
+                    </label>
+                </div>
+            </section>
+
+            <!-- Notes -->
+            <section>
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Notes</label>
+                <textarea rows="3"
+                    class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary transition-all resize-none"
+                    placeholder="Enter verification notes..."></textarea>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <div
+            class="p-6 bg-slate-50 dark:bg-white/5 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
+            <button class="btn btn-secondary px-6">Cancel</button>
+            <button class="btn btn-primary px-8">Save Result</button>
+        </div>
+    </div>
+    <script src="../js/app.js"></script>
+</body>
+
+</html>

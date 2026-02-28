@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SmartBook - Treatment Selection</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../styles/globals.css">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#258cf4",
+                        "mint": "#4fd1c5",
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+    <header class="bg-primary px-6 py-4 flex items-center justify-between shadow-lg z-10">
+        <div class="flex items-center gap-3">
+            <div class="bg-white/20 p-2 rounded-lg">
+                <span class="material-symbols-outlined text-white text-2xl">medical_services</span>
+            </div>
+            <h1 class="text-white text-xl font-bold tracking-tight">SmartBook</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <span class="text-white/80 text-sm font-medium">Step 2 of 6</span>
+            <div class="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
+                <div class="w-2/6 h-full bg-white rounded-full"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-5xl mx-auto w-full px-6 py-10 selection:bg-primary/30">
+        <div class="mb-12">
+            <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-4">
+                What can we help you with today?
+            </h2>
+            <p class="text-slate-500 dark:text-slate-400 text-lg">Select the primary reason for your visit to help us
+                prepare your clinical profile.</p>
+        </div>
+
+        <!-- MEDICAL SECTION -->
+        <section class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <span
+                    class="bg-mint/10 text-mint px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border border-mint/20">
+                    Medical
+                </span>
+                <span class="text-slate-400 dark:text-slate-500 text-sm font-medium">Insurance-based</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button class="card group relative flex flex-col items-start p-6 text-left">
+                    <div
+                        class="mb-4 p-3 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-primary/10 transition-colors">
+                        <span
+                            class="material-symbols-outlined text-slate-600 dark:text-slate-400 group-hover:text-primary">search_check</span>
+                    </div>
+                    <h3 class="text-lg font-bold mb-1">Mole Check</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Full-body clinical examination for skin
+                        health.</p>
+                </button>
+
+                <button
+                    class="card group relative flex flex-col items-start p-6 text-left border-primary bg-primary/5 dark:bg-primary/10">
+                    <div class="absolute top-4 right-4">
+                        <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
+                    </div>
+                    <div class="mb-4 p-3 rounded-lg bg-primary text-white">
+                        <span class="material-symbols-outlined">face</span>
+                    </div>
+                    <h3 class="text-lg font-bold mb-1">Acne Evaluation</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-300">Personalized analysis and treatment plan.</p>
+                </button>
+
+                <button class="card group relative flex flex-col items-start p-6 text-left">
+                    <div
+                        class="mb-4 p-3 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-primary/10 transition-colors">
+                        <span
+                            class="material-symbols-outlined text-slate-600 dark:text-slate-400 group-hover:text-primary">dermatology</span>
+                    </div>
+                    <h3 class="text-lg font-bold mb-1">Rash Concern</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Expert diagnosis for skin conditions.</p>
+                </button>
+            </div>
+        </section>
+
+        <!-- COSMETIC SECTION -->
+        <section class="mb-16">
+            <div class="flex items-center gap-3 mb-6">
+                <span
+                    class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border border-primary/20">
+                    Cosmetic
+                </span>
+                <span class="text-slate-400 dark:text-slate-500 text-sm font-medium">Self-pay, $50 deposit</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button class="card group relative flex items-center p-6 text-left gap-5">
+                    <div
+                        class="p-4 rounded-full bg-slate-100 dark:bg-slate-800 group-hover:bg-primary/10 transition-colors shrink-0">
+                        <span
+                            class="material-symbols-outlined text-slate-600 dark:text-slate-400 group-hover:text-primary text-3xl">vaccines</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold mb-1">Botox Treatment</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Wrinkle reduction and prevention.</p>
+                    </div>
+                </button>
+
+                <button class="card group relative flex items-center p-6 text-left gap-5">
+                    <div
+                        class="p-4 rounded-full bg-slate-100 dark:bg-slate-800 group-hover:bg-primary/10 transition-colors shrink-0">
+                        <span
+                            class="material-symbols-outlined text-slate-600 dark:text-slate-400 group-hover:text-primary text-3xl">water_drop</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold mb-1">Dermal Fillers</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Volume restoration and contouring.</p>
+                    </div>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer
+        class="sticky bottom-0 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-6 z-40">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                <span class="material-symbols-outlined text-sm">info</span>
+                <p class="text-sm">You can change your selection at any time before confirming.</p>
+            </div>
+            <div class="flex w-full md:w-auto gap-3">
+                <button class="btn btn-secondary flex-1 md:flex-none">Back</button>
+                <button class="btn btn-primary flex-1 md:flex-none px-12">Continue</button>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const clinicSlug = 'elite-med-spa'; // In production, this would come from URL
+
+            try {
+                const response = await window.smartbookApi.getAppointmentTypes(clinicSlug);
+                if (response.success) {
+                    renderAppointmentTypes(response.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch appointment types:', error);
+            }
+        });
+
+        function renderAppointmentTypes(types) {
+            const medicalGrid = document.querySelector('section:nth-of-type(1) .grid');
+            const cosmeticGrid = document.querySelector('section:nth-of-type(2) .grid');
+
+            // Clear placeholders
+            medicalGrid.innerHTML = '';
+            cosmeticGrid.innerHTML = '';
+
+            types.forEach(type => {
+                const button = document.createElement('button');
+                button.className = 'card group relative flex flex-col items-start p-6 text-left';
+                button.onclick = () => selectType(type);
+
+                const icon = type.category === 'medical' ? 'search_check' : 'vaccines';
+
+                button.innerHTML = `
+                    <div class="mb-4 p-3 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-primary/10 transition-colors">
+                        <span class="material-symbols-outlined text-slate-600 dark:text-slate-400 group-hover:text-primary">${icon}</span>
+                    </div>
+                    <h3 class="text-lg font-bold mb-1">${type.name}</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">${type.duration} minutes</p>
+                    ${type.category === 'cosmetic' ? `<p class="mt-2 text-xs font-bold text-primary font-display">$${type.deposit_amount} Deposit</p>` : ''}
+                `;
+
+                if (type.category === 'medical') {
+                    medicalGrid.appendChild(button);
+                } else {
+                    cosmeticGrid.appendChild(button);
+                }
+            });
+        }
+
+        function selectType(type) {
+            // Remove previous selection highlight
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('border-primary', 'bg-primary/5'));
+
+            // Highlight current selection (logic needs to find the exact button, simplified for now)
+            // ...
+
+            sessionStorage.setItem('selectedAppointmentType', JSON.stringify(type));
+            console.log('Selected:', type.name);
+        }
+
+        document.querySelector('.btn-primary').onclick = () => {
+            if (sessionStorage.getItem('selectedAppointmentType')) {
+                window.location.href = 'step_3_provider_selection.html';
+            } else {
+                alert('Please select a treatment reason.');
+            }
+        };
+    </script>
+</body>
+
+</html>

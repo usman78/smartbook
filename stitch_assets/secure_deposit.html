@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Secure Deposit - SmartBook</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../styles/globals.css">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#258cf4",
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+    <header class="bg-primary px-6 py-4 flex items-center justify-between shadow-lg z-10">
+        <div class="flex items-center gap-3">
+            <div class="bg-white/20 p-2 rounded-lg">
+                <span class="material-symbols-outlined text-white text-2xl">auto_awesome</span>
+            </div>
+            <h1 class="text-white text-xl font-bold tracking-tight">SmartBook</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <span class="text-white/80 text-sm font-medium">Step 6 of 6</span>
+            <div class="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
+                <div class="w-full h-full bg-white rounded-full"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center py-12 px-4 selection:bg-primary/30">
+        <div class="w-full max-w-4xl">
+            <div class="mb-10 text-center md:text-left">
+                <h2 class="text-3xl md:text-5xl font-black mb-2">Secure Deposit</h2>
+                <p class="text-slate-500 font-medium">Finalize and confirm your appointment.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <!-- Left: Summary -->
+                <div class="md:col-span-5 flex flex-col gap-6">
+                    <div class="card p-6">
+                        <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Summary</h3>
+                        <div class="flex items-start gap-4 mb-6" id="summary-card">
+                            <div class="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">medical_services</span>
+                            </div>
+                            <div>
+                                <p class="font-bold" id="summary-type">Loading...</p>
+                                <p class="text-slate-500 text-sm" id="summary-datetime">Loading...</p>
+                                <p class="text-slate-400 text-xs mt-1" id="summary-provider">Loading...</p>
+                            </div>
+                        </div>
+                        <div
+                            class="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                            <span class="font-medium">Deposit Due</span>
+                            <span class="text-2xl font-black" id="summary-deposit">$0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-primary/5 border-l-4 border-primary p-5 rounded-r-xl">
+                        <div class="flex gap-3">
+                            <span class="material-symbols-outlined text-primary">info</span>
+                            <p class="text-sm text-slate-500">
+                                A temporary hold for the balance will be placed 7 days prior to your visit.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Payment -->
+                <div class="md:col-span-7">
+                    <div class="card p-8">
+                        <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">credit_card</span>
+                            Payment Information
+                        </h3>
+                        <form class="space-y-6">
+                            <div class="space-y-4">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black uppercase text-slate-400">Cardholder
+                                        Name</label>
+                                    <input
+                                        class="w-full bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-lg py-3 px-4 outline-none focus:ring-2 focus:ring-primary"
+                                        placeholder="Jane Doe" type="text" />
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black uppercase text-slate-400">Card Number</label>
+                                    <input
+                                        class="w-full bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-lg py-3 px-4 outline-none focus:ring-2 focus:ring-primary"
+                                        placeholder="0000 0000 0000 0000" type="text" />
+                                </div>
+                            </div>
+                            <div class="pt-6 space-y-4">
+                                <button class="btn btn-primary w-full py-4 text-lg">
+                                    <span class="material-symbols-outlined">lock</span>
+                                    Pay $50.00 & Confirm
+                                </button>
+                                <button class="btn btn-secondary w-full py-3">Back to Review</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-12 flex flex-col items-center border-t border-slate-200 dark:border-slate-800">
+        <div class="flex flex-wrap justify-center gap-8 opacity-40">
+            <span class="text-[10px] font-black tracking-widest uppercase">HIPAA Compliant</span>
+            <span class="text-[10px] font-black tracking-widest uppercase">PCI-DSS Secure</span>
+        </div>
+        <p class="text-slate-400 text-[10px] mt-8 uppercase tracking-[0.2em]">© 2024 SmartBook Professional Scheduling.
+        </p>
+    </footer>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const type = JSON.parse(sessionStorage.getItem('selectedAppointmentType'));
+            const provider = JSON.parse(sessionStorage.getItem('selectedProvider'));
+            const slot = sessionStorage.getItem('selectedSlot');
+
+            if (type && provider && slot) {
+                document.getElementById('summary-type').innerText = type.name;
+                document.getElementById('summary-datetime').innerText = new Date(slot).toLocaleString();
+                document.getElementById('summary-provider').innerText = provider.full_name;
+                document.getElementById('summary-deposit').innerText = `$${type.deposit_amount || 0}`;
+                document.querySelector('.btn-primary').innerHTML = `<span class="material-symbols-outlined">lock</span> Pay $${type.deposit_amount || 0} & Confirm`;
+            }
+        });
+
+        document.querySelector('form').onsubmit = async (e) => {
+            e.preventDefault();
+
+            const reservation = JSON.parse(sessionStorage.getItem('reservation'));
+            const patientData = JSON.parse(sessionStorage.getItem('patientData'));
+
+            // In a real app, you'd integrate Stripe properly here
+            const paymentMethodId = 'pm_card_visa'; // Mocked card
+
+            try {
+                const response = await window.smartbookApi.createBooking(
+                    reservation.session_token,
+                    patientData,
+                    paymentMethodId
+                );
+
+                if (response.success) {
+                    sessionStorage.setItem('confirmedBooking', JSON.stringify(response.data));
+                    alert('Booking Confirmed!');
+                    // Redirect to success page (needs to be created)
+                    // window.location.href = 'booking_success.html';
+                }
+            } catch (error) {
+                alert('Booking failed: ' + error.message);
+            }
+        };
+
+        document.querySelector('.btn-secondary').onclick = (e) => {
+            e.preventDefault();
+            window.location.href = 'patient_info_hipaa.html';
+        };
+    </script>
+</body>
+
+</html>
