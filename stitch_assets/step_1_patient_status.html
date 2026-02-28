@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>SmartBook - Patient Status</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="../styles/globals.css">
     <script id="tailwind-config">
         tailwind.config = {
@@ -21,7 +24,9 @@
         }
     </script>
 </head>
-<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
     <header class="bg-primary px-6 py-4 flex items-center justify-between shadow-lg z-10">
         <div class="flex items-center gap-3">
             <div class="bg-white/20 p-2 rounded-lg">
@@ -38,13 +43,16 @@
     </header>
 
     <main class="flex-1 relative flex flex-center px-4 py-12 overflow-hidden">
-        <div class="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/4 w-[500px] h-[500px] opacity-40 pointer-events-none">
-            <div class="w-full h-full bg-gradient-to-br from-primary/40 to-purple-600/20 blur-[80px] rounded-full"></div>
+        <div
+            class="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/4 w-[500px] h-[500px] opacity-40 pointer-events-none">
+            <div class="w-full h-full bg-gradient-to-br from-primary/40 to-purple-600/20 blur-[80px] rounded-full">
+            </div>
         </div>
 
         <div class="relative z-10 w-full max-w-4xl flex flex-col gap-12">
             <div class="space-y-4 max-w-2xl">
-                <h2 class="text-5xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-none">
+                <h2
+                    class="text-5xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white leading-none">
                     Welcome to <span class="text-primary">SmartBook!</span>
                 </h2>
                 <p class="text-xl text-slate-600 dark:text-slate-400 font-medium">
@@ -55,35 +63,43 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                 <!-- New Patient Card -->
                 <button class="card group relative flex flex-col items-start p-8 text-left outline-none">
-                    <div class="mb-6 p-4 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+                    <div
+                        class="mb-6 p-4 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-200">
                         <span class="material-symbols-outlined text-4xl">person_add</span>
                     </div>
                     <div class="space-y-2">
-                        <h3 class="text-2xl font-bold dark:text-white group-hover:text-primary transition-colors">I am a NEW patient</h3>
-                        <p class="text-slate-500 dark:text-slate-400 font-normal">First time at this clinic. We'll help you get set up with a new profile.</p>
+                        <h3 class="text-2xl font-bold dark:text-white group-hover:text-primary transition-colors">I am a
+                            NEW patient</h3>
+                        <p class="text-slate-500 dark:text-slate-400 font-normal">First time at this clinic. We'll help
+                            you get set up with a new profile.</p>
                     </div>
                 </button>
 
                 <!-- Returning Patient Card -->
                 <button class="card group relative flex flex-col items-start p-8 text-left outline-none">
-                    <div class="mb-6 p-4 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+                    <div
+                        class="mb-6 p-4 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-200">
                         <span class="material-symbols-outlined text-4xl">account_circle</span>
                     </div>
                     <div class="space-y-2">
-                        <h3 class="text-2xl font-bold dark:text-white group-hover:text-primary transition-colors">I am a RETURNING patient</h3>
-                        <p class="text-slate-500 dark:text-slate-400 font-normal">I have been here before. We'll pull up your existing records.</p>
+                        <h3 class="text-2xl font-bold dark:text-white group-hover:text-primary transition-colors">I am a
+                            RETURNING patient</h3>
+                        <p class="text-slate-500 dark:text-slate-400 font-normal">I have been here before. We'll pull up
+                            your existing records.</p>
                     </div>
                 </button>
             </div>
 
-            <div class="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-slate-200 dark:border-slate-800">
+            <div
+                class="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-slate-200 dark:border-slate-800">
                 <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                     <span class="material-symbols-outlined text-sm">info</span>
                     <span class="text-sm font-medium">Your data is secured with enterprise-grade encryption</span>
                 </div>
                 <button class="btn btn-primary min-w-[200px] h-14 text-lg">
                     <span>Continue</span>
-                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    <span
+                        class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </button>
             </div>
         </div>
@@ -94,5 +110,28 @@
     </footer>
 
     <script src="../js/app.js"></script>
+    <script>
+        document.querySelectorAll('.card').forEach((card, index) => {
+            card.onclick = () => {
+                // Remove highlight from all
+                document.querySelectorAll('.card').forEach(c => c.classList.remove('border-primary', 'bg-primary/5'));
+                // Add highlight to selected
+                card.classList.add('border-primary', 'bg-primary/5');
+
+                const isNew = index === 0;
+                sessionStorage.setItem('isNewPatient', isNew);
+                console.log('Patient Status:', isNew ? 'NEW' : 'RETURNING');
+            };
+        });
+
+        document.querySelector('.btn-primary').onclick = () => {
+            if (sessionStorage.getItem('isNewPatient') !== null) {
+                window.location.href = 'step_2_treatment_selection.html';
+            } else {
+                alert('Please select your status.');
+            }
+        };
+    </script>
 </body>
+
 </html>
