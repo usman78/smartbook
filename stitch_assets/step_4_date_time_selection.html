@@ -118,23 +118,12 @@
                 <div class="card p-6 h-full flex flex-col">
                     <div class="mb-6">
                         <h3 class="text-xl font-bold mb-1">Available Times</h3>
-                        <p class="text-slate-500 text-sm">Friday, Feb 20, 2026</p>
+                        <p class="text-slate-500 text-sm">Select a date to see available slots.</p>
                     </div>
-                    <div class="grid grid-cols-2 gap-3 mb-6">
-                        <button
-                            class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-primary transition-all text-center">
-                            <span class="block font-bold">9:00 AM</span>
-                            <span class="text-[10px] uppercase opacity-60">Morning</span>
-                        </button>
-                        <button class="p-4 rounded-xl border-2 border-primary bg-primary/5 text-center">
-                            <span class="block font-bold text-primary">10:00 AM</span>
-                            <span class="text-[10px] uppercase text-primary opacity-80">Morning</span>
-                        </button>
-                        <button
-                            class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-primary transition-all text-center">
-                            <span class="block font-bold">2:00 PM</span>
-                            <span class="text-[10px] uppercase opacity-60">Afternoon</span>
-                        </button>
+                    <!-- Slot grid — populated dynamically by renderSlots() -->
+                    <div class="grid grid-cols-2 gap-3 mb-6" id="slots-grid">
+                        <p class="col-span-2 text-center py-8 text-slate-400 italic">← Select a date to load available
+                            times.</p>
                     </div>
                     <div class="mt-auto p-4 rounded-lg bg-primary/5 border border-primary/10 flex gap-3">
                         <span class="material-symbols-outlined text-primary text-sm">info</span>
@@ -161,59 +150,146 @@
     <script src="../js/api.js"></script>
     <script src="../js/app.js"></script>
     <script>
+        // Guard: redirect to Step 1 if user jumps here directly
+        if (sessionStorage.getItem('selectedProvider') === null) {
+            window.location.href = 'step_1_patient_status.html';
+        }
+
         let countdownInterval;
+        const today = new Date();
+        let currentYear = today.getFullYear();
+        let currentMonth = today.getMonth(); // 0-indexed
+        let selectedDate = null;
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            const clinicSlug = 'elite-med-spa';
-            const selectedProvider = JSON.parse(sessionStorage.getItem('selectedProvider'));
-            const selectedType = JSON.parse(sessionStorage.getItem('selectedAppointmentType'));
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCalendar();
 
-            // For now, auto-fetch for today's date
-            const today = new Date().toISOString().split('T')[0];
-            fetchSlots(today);
-
-            // Add simple date picker listener (if you had one, using static buttons for now)
-            document.querySelectorAll('.grid button').forEach(btn => {
+            // Set up month navigation
+            document.querySelectorAll('.flex.items-center.gap-2 button').forEach((btn, idx) => {
                 btn.onclick = () => {
-                    const date = `2026-02-${btn.innerText.padStart(2, '0')}`;
-                    fetchSlots(date);
+                    if (idx === 0) { // Previous
+                        currentMonth--;
+                        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+                    } else { // Next
+                        currentMonth++;
+                        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+                    }
+                    renderCalendar();
                 };
             });
         });
 
+        function renderCalendar() {
+            const grid = document.querySelector('.grid.grid-cols-7.gap-1');
+            const monthDisplay = document.querySelector('.font-bold.min-w-\\[120px\\]');
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            monthDisplay.innerText = `${monthNames[currentMonth]} ${currentYear}`;
+
+            // Clear current days (keep the week headers)
+            const headers = Array.from(grid.querySelectorAll('div.text-\\[10px\\]'));
+            grid.innerHTML = '';
+            headers.forEach(h => grid.appendChild(h));
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const prevMonthDays = new Date(currentYear, currentMonth, 0).getDate();
+
+            // Padding from previous month
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const div = document.createElement('div');
+                div.className = 'aspect-square flex items-center justify-center text-slate-300 text-sm';
+                div.innerText = prevMonthDays - i;
+                grid.appendChild(div);
+            }
+
+            // Days of current month
+            for (let d = 1; d <= daysInMonth; d++) {
+                const button = document.createElement('button');
+                button.className = 'aspect-square rounded-lg hover:bg-primary/10 font-medium transition-all text-sm day-button';
+                button.innerText = d;
+
+                const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+                if (dateString === selectedDate) {
+                    button.classList.add('bg-primary', 'text-white', 'hover:bg-primary');
+                }
+
+                button.onclick = () => {
+                    document.querySelectorAll('.day-button').forEach(b => b.classList.remove('bg-primary', 'text-white', 'hover:bg-primary'));
+                    button.classList.add('bg-primary', 'text-white', 'hover:bg-primary');
+                    selectedDate = dateString;
+                    fetchSlots(dateString);
+                };
+
+                grid.appendChild(button);
+            }
+        }
+
         async function fetchSlots(date) {
             const clinicSlug = 'elite-med-spa';
             const provider = JSON.parse(sessionStorage.getItem('selectedProvider'));
-
             if (!provider) return;
 
-            document.querySelector('.text-slate-500.text-sm').innerText = date;
+            // Update date label
+            const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+            const displayDate = new Date(date + 'T12:00:00').toLocaleDateString(undefined, options);
+            document.querySelector('.lg\\:col-span-5 h3 + p').innerText = displayDate;
+
+            const grid = document.getElementById('slots-grid');
+            grid.innerHTML = '<p class="col-span-2 text-center py-8 text-slate-400 italic">Loading available slots...</p>';
 
             try {
-                // If 'any', we use a dummy ID or handle on backend
-                const targetId = provider.id === 'any' ? 'any' : provider.id;
-                const response = await window.smartbookApi.getSlots(clinicSlug, targetId, date);
-                if (response.success) {
-                    renderSlots(response.data);
+                let allSlots = [];
+
+                if (provider.id === 'any') {
+                    // When 'Any Available' was chosen, fetch slots from all qualifying providers
+                    const selectedType = JSON.parse(sessionStorage.getItem('selectedAppointmentType'));
+                    const providersRes = await window.smartbookApi.getProviders(clinicSlug, selectedType ? selectedType.id : null);
+                    if (providersRes.success && providersRes.data.length > 0) {
+                        const slotPromises = providersRes.data.map(p =>
+                            window.smartbookApi.getSlots(clinicSlug, p.id, date)
+                                .then(r => r.success ? r.data : [])
+                                .catch(() => [])
+                        );
+                        const results = await Promise.all(slotPromises);
+                        // Merge, deduplicate, sort
+                        allSlots = [...new Set(results.flat())].sort();
+                    }
+                } else {
+                    const response = await window.smartbookApi.getSlots(clinicSlug, provider.id, date);
+                    if (response.success) allSlots = response.data;
                 }
+
+                renderSlots(allSlots);
             } catch (error) {
                 console.error('Failed to fetch slots:', error);
+                grid.innerHTML = '<p class="col-span-2 text-center py-8 text-red-400 italic">Could not load slots. Please try again.</p>';
             }
         }
 
         function renderSlots(slots) {
-            const grid = document.querySelector('.lg\\:col-span-5 .grid');
+            const grid = document.getElementById('slots-grid');
             grid.innerHTML = '';
+
+            if (slots.length === 0) {
+                grid.innerHTML = '<p class="col-span-2 text-center py-8 text-slate-400 italic">No slots available for this date.</p>';
+                return;
+            }
 
             slots.forEach(slot => {
                 const button = document.createElement('button');
-                button.className = 'p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-primary transition-all text-center';
+                button.className = 'p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-primary hover:bg-primary/5 transition-all text-center group';
                 const timeStr = new Date(slot).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                button.onclick = () => reserve(slot);
+                button.onclick = () => {
+                    document.querySelectorAll('#slots-grid button').forEach(b => b.classList.remove('border-primary', 'bg-primary/5', 'ring-2', 'ring-primary/20'));
+                    button.classList.add('border-primary', 'bg-primary/5', 'ring-2', 'ring-primary/20');
+                    reserve(slot);
+                };
 
                 button.innerHTML = `
-                    <span class="block font-bold">${timeStr}</span>
+                    <span class="block font-bold group-hover:text-primary">${timeStr}</span>
                     <span class="text-[10px] uppercase opacity-60">Available</span>
                 `;
                 grid.appendChild(button);
@@ -224,15 +300,19 @@
             const clinicSlug = 'elite-med-spa';
             const provider = JSON.parse(sessionStorage.getItem('selectedProvider'));
             const type = JSON.parse(sessionStorage.getItem('selectedAppointmentType'));
+            const patientStatus = sessionStorage.getItem('patientStatus');
+            const isNewPatient = patientStatus === 'new';
 
             try {
-                const response = await window.smartbookApi.reserveSlot(clinicSlug, provider.id, type.id, slot);
+                const response = await window.smartbookApi.reserveSlot(clinicSlug, provider.id, type.id, slot, isNewPatient);
                 if (response.success) {
                     sessionStorage.setItem('reservation', JSON.stringify(response.data));
                     sessionStorage.setItem('selectedSlot', slot);
-                    startTimer(10 * 60); // 10 minutes
+                    startTimer(10 * 60);
 
-                    // Highlight selected slot...
+                    // Enable Continue button now that a reservation is confirmed
+                    continueBtn4.disabled = false;
+                    continueBtn4.classList.remove('opacity-50', 'cursor-not-allowed');
                 }
             } catch (error) {
                 alert('This slot was just taken. Please select another time.');
@@ -247,12 +327,9 @@
             countdownInterval = setInterval(() => {
                 let minutes = parseInt(timer / 60, 10);
                 let seconds = parseInt(timer % 60, 10);
-
                 minutes = minutes < 10 ? "0" + minutes : minutes;
                 seconds = seconds < 10 ? "0" + seconds : seconds;
-
                 display.textContent = minutes + ":" + seconds;
-
                 if (--timer < 0) {
                     clearInterval(countdownInterval);
                     alert('Reservation expired. Please select the slot again.');
@@ -261,11 +338,13 @@
             }, 1000);
         }
 
-        document.querySelector('.btn-primary').onclick = () => {
+        const continueBtn4 = document.querySelector('.btn-primary');
+        continueBtn4.disabled = true;
+        continueBtn4.classList.add('opacity-50', 'cursor-not-allowed');
+
+        continueBtn4.onclick = () => {
             if (sessionStorage.getItem('reservation')) {
                 window.location.href = 'patient_info_hipaa.html';
-            } else {
-                alert('Please select a time slot.');
             }
         };
 

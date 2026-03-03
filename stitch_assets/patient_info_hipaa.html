@@ -126,6 +126,21 @@
     <script src="../js/api.js"></script>
     <script src="../js/app.js"></script>
     <script>
+        // Guard: Redirect if no reservation is found
+        if (!sessionStorage.getItem('reservation')) {
+            window.location.href = 'step_1_patient_status.html';
+        }
+
+        // Auto-fill form if data already exists in session
+        const existingData = JSON.parse(sessionStorage.getItem('patientData'));
+        if (existingData) {
+            document.getElementById('fullName').value = existingData.fullName || '';
+            document.getElementById('dob').value = existingData.dateOfBirth || '';
+            document.getElementById('email').value = existingData.email || '';
+            document.getElementById('phone').value = existingData.phone || '';
+            document.getElementById('hipaa-consent').checked = existingData.hipaaConsent || false;
+        }
+
         const form = document.querySelector('form');
 
         form.onsubmit = (e) => {

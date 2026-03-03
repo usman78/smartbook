@@ -111,25 +111,46 @@
 
     <script src="../js/app.js"></script>
     <script>
+        const continueBtn = document.querySelector('.btn-primary');
+
+        // --- IMPORTANT: Clear all previous booking session data ---
+        // This ensures a fresh start every time Step 1 is loaded.
+        sessionStorage.removeItem('patientStatus');
+        sessionStorage.removeItem('isNewPatient');
+        sessionStorage.removeItem('selectedAppointmentType');
+        sessionStorage.removeItem('selectedProvider');
+        sessionStorage.removeItem('selectedSlot');
+        sessionStorage.removeItem('reservation');
+        sessionStorage.removeItem('patientData');
+
+        // Start with Continue button disabled
+        continueBtn.disabled = true;
+        continueBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
         document.querySelectorAll('.card').forEach((card, index) => {
             card.onclick = () => {
                 // Remove highlight from all
-                document.querySelectorAll('.card').forEach(c => c.classList.remove('border-primary', 'bg-primary/5'));
+                document.querySelectorAll('.card').forEach(c => {
+                    c.classList.remove('border-primary', 'bg-primary/5', 'ring-2', 'ring-primary/20');
+                });
                 // Add highlight to selected
-                card.classList.add('border-primary', 'bg-primary/5');
+                card.classList.add('border-primary', 'bg-primary/5', 'ring-2', 'ring-primary/20');
 
                 const isNew = index === 0;
                 sessionStorage.setItem('isNewPatient', isNew);
-                console.log('Patient Status:', isNew ? 'NEW' : 'RETURNING');
+                sessionStorage.setItem('patientStatus', isNew ? 'new' : 'returning');
+
+                // Enable Continue button
+                continueBtn.disabled = false;
+                continueBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             };
         });
 
-        document.querySelector('.btn-primary').onclick = () => {
+        continueBtn.onclick = () => {
             if (sessionStorage.getItem('isNewPatient') !== null) {
                 window.location.href = 'step_2_treatment_selection.html';
-            } else {
-                alert('Please select your status.');
             }
+            // No else needed — button is disabled if nothing selected
         };
     </script>
 </body>

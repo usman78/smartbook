@@ -150,18 +150,55 @@
     <script src="../js/api.js"></script>
     <script src="../js/app.js"></script>
     <script>
+        // Guard: redirect to Step 1 if user jumps here directly
+        if (sessionStorage.getItem('selectedAppointmentType') === null) {
+            window.location.href = 'step_1_patient_status.html';
+        }
+
+        const continueBtn = document.querySelector('.btn-primary');
+        // Start disabled until a provider is selected
+        continueBtn.disabled = true;
+        continueBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
         document.addEventListener('DOMContentLoaded', async () => {
             const clinicSlug = 'elite-med-spa';
             const selectedType = JSON.parse(sessionStorage.getItem('selectedAppointmentType'));
 
+            // Show the selected treatment name in the subtitle
             if (selectedType) {
                 document.querySelector('p.text-lg').innerHTML = `Showing providers qualified for <span class="text-primary font-semibold">${selectedType.name}</span>.`;
             }
 
             try {
-                const response = await window.smartbookApi.getProviders(clinicSlug);
+                // Pass the appointmentTypeId so only qualified providers are returned
+                const appointmentTypeId = selectedType ? selectedType.id : null;
+                const response = await window.smartbookApi.getProviders(clinicSlug, appointmentTypeId);
                 if (response.success) {
                     renderProviders(response.data);
+
+                    // Restore previously selected provider highlight (e.g. when navigating back)
+                    const prevProvider = JSON.parse(sessionStorage.getItem('selectedProvider'));
+                    if (prevProvider) {
+                        if (prevProvider.id === 'any') {
+                            // Re-highlight the "Any Available" card
+                            const anyCard = Array.from(document.querySelectorAll('.card')).find(c => c.textContent.includes('Any Available Provider'));
+                            if (anyCard) {
+                                anyCard.classList.add('border-primary', 'ring-4', 'ring-primary/10');
+                                const check = anyCard.querySelector('.material-symbols-outlined.text-primary');
+                                if (check) check.classList.remove('hidden');
+                            }
+                        } else {
+                            // Re-highlight the matching provider card by finding the one with a matching button id
+                            const matchCard = document.getElementById(`provider-${prevProvider.id}`);
+                            if (matchCard) {
+                                matchCard.classList.add('border-primary', 'ring-4', 'ring-primary/10');
+                                matchCard.querySelector('.selection-check')?.classList.remove('opacity-0');
+                            }
+                        }
+                        // Re-enable Continue since a provider is already selected
+                        continueBtn.disabled = false;
+                        continueBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
                 }
             } catch (error) {
                 console.error('Failed to fetch providers:', error);
@@ -171,19 +208,24 @@
         function renderProviders(providers) {
             const grid = document.querySelector('.grid');
 
-            // Keep the "Any Available" card (the first grid item)
-            const anyAvailableCard = grid.firstElementChild;
+            // Find the "Any Available" card
+            const anyAvailableCard = Array.from(grid.querySelectorAll('.card')).find(c => c.innerHTML.includes('Any Available Provider'));
             grid.innerHTML = '';
-            grid.appendChild(anyAvailableCard);
-
-            anyAvailableCard.onclick = () => selectProvider({ id: 'any', full_name: 'Any Available Provider' });
+            if (anyAvailableCard) {
+                grid.appendChild(anyAvailableCard);
+                anyAvailableCard.onclick = () => selectProvider({ id: 'any', full_name: 'Any Available Provider' }, anyAvailableCard);
+            }
 
             providers.forEach(provider => {
                 const button = document.createElement('button');
-                button.className = 'card group relative flex flex-col text-left p-6';
-                button.onclick = () => selectProvider(provider);
+                button.className = 'card group relative flex flex-col text-left p-6 transition-all';
+                button.id = `provider-${provider.id}`;
+                button.onclick = () => selectProvider(provider, button);
 
                 button.innerHTML = `
+                    <div class="selection-check absolute top-4 right-4 opacity-0 transition-opacity">
+                        <span class="material-symbols-outlined text-primary text-2xl">check_circle</span>
+                    </div>
                     <div class="flex gap-4 mb-4">
                         <div class="relative">
                             <div class="size-20 rounded-lg bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
@@ -208,19 +250,38 @@
             });
         }
 
-        function selectProvider(provider) {
-            document.querySelectorAll('.card').forEach(c => c.classList.remove('border-primary', 'ring-4', 'ring-primary/10'));
-            // Highlight logic...
+        function selectProvider(provider, element) {
+            // Remove previous selection highlight
+            document.querySelectorAll('.card').forEach(c => {
+                c.classList.remove('border-primary', 'ring-4', 'ring-primary/10');
+                // Hide any check icons if they exist in standard cards
+                c.querySelector('.selection-check')?.classList.add('opacity-0');
+                // Special handling for the "Any Available" card which has a fixed checkmark
+                if (c.innerHTML.includes('Any Available Provider')) {
+                    c.querySelector('.material-symbols-outlined.text-primary')?.classList.add('hidden');
+                }
+            });
+
+            // Highlight current selection
+            element.classList.add('border-primary', 'ring-4', 'ring-primary/10');
+
+            if (element.querySelector('.selection-check')) {
+                element.querySelector('.selection-check').classList.remove('opacity-0');
+            } else if (element.querySelector('.material-symbols-outlined.text-primary')) {
+                // Show checkmark for "Any Available" card
+                element.querySelector('.material-symbols-outlined.text-primary').classList.remove('hidden');
+            }
 
             sessionStorage.setItem('selectedProvider', JSON.stringify(provider));
-            console.log('Selected Provider:', provider.full_name);
+
+            // Enable Continue button
+            continueBtn.disabled = false;
+            continueBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         }
 
-        document.querySelector('.btn-primary').onclick = () => {
+        continueBtn.onclick = () => {
             if (sessionStorage.getItem('selectedProvider')) {
                 window.location.href = 'step_4_date_time_selection.html';
-            } else {
-                alert('Please select a provider.');
             }
         };
 

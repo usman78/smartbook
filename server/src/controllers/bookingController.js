@@ -10,13 +10,24 @@ const { DateTime } = require('luxon');
 
 /**
  * GET /api/public/clinics/:slug/providers
+ * Optional query param: ?appointmentTypeId=<uuid>
+ * When provided, only providers qualified for that treatment are returned.
  */
 const getProviders = async (req, res) => {
     try {
         const clinic = await Clinic.getBySlug(req.params.slug);
         if (!clinic) return res.status(404).json({ error: 'Clinic not found' });
 
-        const providers = await Provider.getAllByClinic(clinic.id);
+        const { appointmentTypeId } = req.query;
+
+        let providers;
+        if (appointmentTypeId) {
+            // Filter: only providers who can perform this treatment
+            providers = await Provider.getByAppointmentType(clinic.id, appointmentTypeId);
+        } else {
+            providers = await Provider.getAllByClinic(clinic.id);
+        }
+
         res.json({ success: true, data: providers });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -43,7 +54,7 @@ const getAppointmentTypes = async (req, res) => {
  */
 const reserveSlot = async (req, res) => {
     try {
-        const { clinicSlug, providerId, appointmentTypeId, slotDatetime } = req.body;
+        const { clinicSlug, providerId, appointmentTypeId, slotDatetime, isNewPatient } = req.body;
 
         const clinic = await Clinic.getBySlug(clinicSlug);
         if (!clinic) return res.status(404).json({ error: 'Clinic not found' });
@@ -51,7 +62,7 @@ const reserveSlot = async (req, res) => {
         // Handle "Any Available" provider (providerId = 'any')
         let targetProviderId = providerId;
         if (providerId === 'any') {
-            const assigned = await Provider.assignProviderAutomatically(clinic.id, appointmentTypeId, slotDatetime);
+            const assigned = await Provider.assignProviderAutomatically(clinic.id, appointmentTypeId, slotDatetime, isNewPatient);
             if (!assigned) return res.status(409).json({ error: 'No provider available for this slot' });
             targetProviderId = assigned.id;
         }

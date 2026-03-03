@@ -25,8 +25,12 @@ const api = {
     },
 
     // Public API
-    async getProviders(clinicSlug) {
-        const res = await fetch(`${API_BASE_URL}/public/clinics/${clinicSlug}/providers`);
+    async getProviders(clinicSlug, appointmentTypeId = null) {
+        let url = `${API_BASE_URL}/public/clinics/${clinicSlug}/providers`;
+        if (appointmentTypeId) {
+            url += `?appointmentTypeId=${appointmentTypeId}`;
+        }
+        const res = await fetch(url);
         return res.json();
     },
 
@@ -40,11 +44,11 @@ const api = {
         return res.json();
     },
 
-    async reserveSlot(clinicSlug, providerId, appointmentTypeId, slotDatetime) {
+    async reserveSlot(clinicSlug, providerId, appointmentTypeId, slotDatetime, isNewPatient = false) {
         const res = await fetch(`${API_BASE_URL}/public/slots/reserve`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ clinicSlug, providerId, appointmentTypeId, slotDatetime })
+            body: JSON.stringify({ clinicSlug, providerId, appointmentTypeId, slotDatetime, isNewPatient })
         });
         return res.json();
     },

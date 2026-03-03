@@ -130,6 +130,11 @@
     <script src="../js/api.js"></script>
     <script src="../js/app.js"></script>
     <script>
+        // Guard: Redirect if no patient data is found (meaning they skipped Step 5)
+        if (!sessionStorage.getItem('patientData')) {
+            window.location.href = 'patient_info_hipaa.html';
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const type = JSON.parse(sessionStorage.getItem('selectedAppointmentType'));
             const provider = JSON.parse(sessionStorage.getItem('selectedProvider'));
@@ -147,11 +152,18 @@
         document.querySelector('form').onsubmit = async (e) => {
             e.preventDefault();
 
+            const submitBtn = document.querySelector('.btn-primary');
+            const originalContent = submitBtn.innerHTML;
+
+            // Loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span> Processing...`;
+
             const reservation = JSON.parse(sessionStorage.getItem('reservation'));
             const patientData = JSON.parse(sessionStorage.getItem('patientData'));
 
-            // In a real app, you'd integrate Stripe properly here
-            const paymentMethodId = 'pm_card_visa'; // Mocked card
+            // Mocked card for MVP
+            const paymentMethodId = 'pm_card_visa';
 
             try {
                 const response = await window.smartbookApi.createBooking(
@@ -162,12 +174,25 @@
 
                 if (response.success) {
                     sessionStorage.setItem('confirmedBooking', JSON.stringify(response.data));
-                    alert('Booking Confirmed!');
-                    // Redirect to success page (needs to be created)
-                    // window.location.href = 'booking_success.html';
+                    // Success!
+                    window.location.href = 'booking_success.html';
+                } else {
+                    throw new Error(response.error || 'Unknown error');
                 }
             } catch (error) {
-                alert('Booking failed: ' + error.message);
+                console.error('Booking Error:', error);
+
+                // User-friendly error mapping
+                let msg = error.message;
+                if (msg.includes('not currently accepting new patients')) {
+                    msg = "We're sorry, this provider is not accepting new patients at this time. Please try another provider.";
+                } else if (msg.includes('Reservation expired')) {
+                    msg = "Your session has expired. Please go back and select a new time slot.";
+                }
+
+                alert('Booking Failed: ' + msg);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalContent;
             }
         };
 
