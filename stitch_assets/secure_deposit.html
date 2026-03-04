@@ -71,7 +71,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-primary/5 border-l-4 border-primary p-5 rounded-r-xl">
+                    <div class="bg-primary/5 border-l-4 border-primary p-5 rounded-r-xl" id="deposit-info-box">
                         <div class="flex gap-3">
                             <span class="material-symbols-outlined text-primary">info</span>
                             <p class="text-sm text-slate-500">
@@ -89,7 +89,7 @@
                             Payment Information
                         </h3>
                         <form class="space-y-6">
-                            <div class="space-y-4">
+                            <div class="space-y-4" id="payment-fields">
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-black uppercase text-slate-400">Cardholder
                                         Name</label>
@@ -141,11 +141,23 @@
             const slot = sessionStorage.getItem('selectedSlot');
 
             if (type && provider && slot) {
+                const depositAmount = parseFloat(type.deposit_amount) || 0;
+
                 document.getElementById('summary-type').innerText = type.name;
                 document.getElementById('summary-datetime').innerText = new Date(slot).toLocaleString();
                 document.getElementById('summary-provider').innerText = provider.full_name;
-                document.getElementById('summary-deposit').innerText = `$${type.deposit_amount || 0}`;
-                document.querySelector('.btn-primary').innerHTML = `<span class="material-symbols-outlined">lock</span> Pay $${type.deposit_amount || 0} & Confirm`;
+                document.getElementById('summary-deposit').innerText = `$${depositAmount.toFixed(2)}`;
+
+                const submitBtn = document.querySelector('.btn-primary');
+
+                if (depositAmount > 0) {
+                    submitBtn.innerHTML = `<span class="material-symbols-outlined">lock</span> Pay $${depositAmount.toFixed(2)} & Confirm`;
+                } else {
+                    // No deposit required: hide payment form and info box
+                    document.getElementById('payment-fields').classList.add('hidden');
+                    document.getElementById('deposit-info-box').classList.add('hidden');
+                    submitBtn.innerHTML = `<span class="material-symbols-outlined">check_circle</span> Confirm Booking`;
+                }
             }
         });
 
@@ -161,9 +173,11 @@
 
             const reservation = JSON.parse(sessionStorage.getItem('reservation'));
             const patientData = JSON.parse(sessionStorage.getItem('patientData'));
+            const type = JSON.parse(sessionStorage.getItem('selectedAppointmentType'));
 
-            // Mocked card for MVP
-            const paymentMethodId = 'pm_card_visa';
+            // Mocked card for MVP, or null if no deposit is required
+            const depositAmount = parseFloat(type.deposit_amount) || 0;
+            const paymentMethodId = depositAmount > 0 ? 'pm_card_visa' : null;
 
             try {
                 const response = await window.smartbookApi.createBooking(
