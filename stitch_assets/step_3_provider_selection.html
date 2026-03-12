@@ -35,11 +35,17 @@
             <h1 class="text-white text-xl font-bold tracking-tight">SmartBook</h1>
         </div>
         <div class="flex items-center gap-4">
-            <span class="text-white/80 text-sm font-medium">Step 3 of 6</span>
-            <div class="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
-                <div class="w-3/6 h-full bg-white rounded-full"></div>
+            <div class="flex items-center gap-4">
+                <span class="text-white/80 text-sm font-medium">Step 3 of 6</span>
+                <div class="flex gap-1">
+                    <div class="h-2 w-5 bg-white rounded-full"></div>
+                    <div class="h-2 w-5 bg-white rounded-full"></div>
+                    <div class="h-2 w-5 bg-white rounded-full"></div>
+                    <div class="h-2 w-5 bg-white/20 rounded-full"></div>
+                    <div class="h-2 w-5 bg-white/20 rounded-full"></div>
+                    <div class="h-2 w-5 bg-white/20 rounded-full"></div>
+                </div>
             </div>
-        </div>
     </header>
 
     <main class="flex-1 max-w-4xl mx-auto w-full px-6 py-12">
@@ -56,13 +62,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Recommended Card -->
             <button
-                class="card group relative flex flex-col text-left p-6 border-primary ring-4 ring-primary/10 cursor-pointer overflow-hidden col-span-1 md:col-span-2">
+                class="card group relative flex flex-col text-left p-6 cursor-pointer overflow-hidden col-span-1 md:col-span-2 transition-all">
                 <div class="absolute top-0 right-0 p-4">
                     <span
                         class="bg-primary text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Recommended</span>
                 </div>
                 <div class="flex items-start gap-5">
-                    <div class="size-14 rounded-full bg-primary flex items-center justify-center text-white shrink-0">
+                    <div
+                        class="size-14 rounded-full bg-primary/10 group-hover:bg-primary transition-colors flex items-center justify-center text-primary group-hover:text-white shrink-0">
                         <span class="material-symbols-outlined text-3xl">bolt</span>
                     </div>
                     <div class="flex-1">
@@ -72,7 +79,7 @@
                         </p>
                     </div>
                     <div class="self-center">
-                        <span class="material-symbols-outlined text-primary text-3xl">check_circle</span>
+                        <span class="material-symbols-outlined text-primary text-3xl hidden">check_circle</span>
                     </div>
                 </div>
             </button>
@@ -159,6 +166,12 @@
         // Start disabled until a provider is selected
         continueBtn.disabled = true;
         continueBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+        // Fix: Make sure the Any Available click registers immediately, before API fetches
+        const preRenderedAnyCard = Array.from(document.querySelectorAll('.card')).find(c => c.innerHTML.includes('Any Available Provider'));
+        if (preRenderedAnyCard) {
+            preRenderedAnyCard.onclick = () => selectProvider({ id: 'any', full_name: 'Any Available Provider' }, preRenderedAnyCard);
+        }
 
         document.addEventListener('DOMContentLoaded', async () => {
             const clinicSlug = 'elite-med-spa';

@@ -37,8 +37,13 @@
         </div>
         <div class="flex items-center gap-4">
             <span class="text-white/80 text-sm font-medium">Step 2 of 6</span>
-            <div class="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
-                <div class="w-2/6 h-full bg-white rounded-full"></div>
+            <div class="flex gap-1">
+                <div class="h-2 w-5 bg-white rounded-full"></div>
+                <div class="h-2 w-5 bg-white rounded-full"></div>
+                <div class="h-2 w-5 bg-white/20 rounded-full"></div>
+                <div class="h-2 w-5 bg-white/20 rounded-full"></div>
+                <div class="h-2 w-5 bg-white/20 rounded-full"></div>
+                <div class="h-2 w-5 bg-white/20 rounded-full"></div>
             </div>
         </div>
     </header>
@@ -141,9 +146,18 @@
                 <span class="material-symbols-outlined text-sm">info</span>
                 <p class="text-sm">You can change your selection at any time before confirming.</p>
             </div>
-            <div class="flex w-full md:w-auto gap-3">
-                <button class="btn btn-secondary flex-1 md:flex-none">Back</button>
-                <button class="btn btn-primary flex-1 md:flex-none px-12">Continue</button>
+            <div class="flex flex-col w-full md:w-auto gap-3 items-end">
+                <div class="flex w-full md:w-auto gap-3">
+                    <button class="btn btn-secondary flex-1 md:flex-none">Back</button>
+                    <button id="continueBtn"
+                        class="btn btn-primary flex-1 md:flex-none px-12 transition-transform">Continue</button>
+                </div>
+                <!-- Validation Feedback Element -->
+                <div id="validationMessage"
+                    class="hidden text-center text-red-500 font-bold mt-2 animate-bounce flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">error</span>
+                    Please select a treatment reason to continue.
+                </div>
             </div>
         </div>
     </footer>
@@ -156,10 +170,12 @@
             window.location.href = 'step_1_patient_status.html';
         }
 
-        const continueBtn = document.querySelector('.btn-primary');
-        // Start disabled until a selection is made
-        continueBtn.disabled = true;
-        continueBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        const continueBtn = document.getElementById('continueBtn');
+        const validationMessage = document.getElementById('validationMessage');
+
+        // Start with visual disabled state
+        continueBtn.classList.add('opacity-50', 'bg-slate-300', 'text-slate-500');
+        continueBtn.classList.remove('btn-primary');
 
         document.addEventListener('DOMContentLoaded', async () => {
             const clinicSlug = 'elite-med-spa';
@@ -232,16 +248,40 @@
 
             sessionStorage.setItem('selectedAppointmentType', JSON.stringify(type));
 
-            // Enable Continue button now that a selection exists
-            continueBtn.disabled = false;
-            continueBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            // Remove validation message if showing
+            validationMessage.classList.add('hidden');
+
+            // Enable visual Continue button
+            continueBtn.classList.remove('opacity-50', 'bg-slate-300', 'text-slate-500');
+            continueBtn.classList.add('btn-primary');
         }
 
         continueBtn.onclick = () => {
             if (sessionStorage.getItem('selectedAppointmentType')) {
                 window.location.href = 'step_3_provider_selection.html';
+            } else {
+                // Show validation feedback
+                validationMessage.classList.remove('hidden');
+
+                // Shake animation for the cards
+                const cards = document.querySelectorAll('.card');
+                cards.forEach(c => {
+                    c.classList.add('animate-[shake_0.5s_ease-in-out]');
+                    setTimeout(() => c.classList.remove('animate-[shake_0.5s_ease-in-out]'), 500);
+                });
             }
         };
+
+        // Add Tailwind shake keyframes to head
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
 
         document.querySelector('.btn-secondary').onclick = () => {
             window.location.href = 'step_1_patient_status.html';

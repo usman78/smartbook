@@ -6,8 +6,9 @@ const { startPaymentRecoveryJobs } = require('./services/paymentRecoveryService'
 validateEnv();
 
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || 'localhost';
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, HOST, () => {
     console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 
     // Start background jobs

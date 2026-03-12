@@ -102,6 +102,13 @@ const api = {
         return res.json();
     },
 
+    async getAppointmentsToday(clinicId) {
+        const res = await fetch(`${API_BASE_URL}/admin/appointments/today?clinicId=${clinicId}`, {
+            headers: this.getAuthHeaders()
+        });
+        return res.json();
+    },
+
     async getWaitlist(clinicId) {
         const res = await fetch(`${API_BASE_URL}/admin/waitlist?clinicId=${clinicId}`, {
             headers: this.getAuthHeaders()

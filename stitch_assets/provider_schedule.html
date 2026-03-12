@@ -72,13 +72,16 @@
                     class="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
                     <span>Schedules</span>
                     <span class="material-symbols-outlined text-xs">chevron_right</span>
-                    <span class="text-primary">Dr. Sarah Smith</span>
+                    <select id="providerSelect"
+                        class="bg-transparent text-primary font-bold outline-none cursor-pointer hover:underline appearance-none">
+                        <option value="">Loading Providers...</option>
+                    </select>
                 </nav>
                 <h2 class="text-2xl font-black tracking-tight">Edit Schedule</h2>
             </div>
             <div class="flex items-center gap-4">
-                <button class="btn btn-secondary px-6">Discard</button>
-                <button class="btn btn-primary px-8">
+                <button class="btn btn-secondary px-6" onclick="loadSelectedProviderSchedule()">Discard</button>
+                <button class="btn btn-primary px-8" id="saveScheduleBtn">
                     <span class="material-symbols-outlined">save</span>
                     Save Changes
                 </button>
@@ -93,25 +96,10 @@
                         <span class="material-symbols-outlined">schedule</span>
                         Weekly Hours
                     </h3>
-                    <div class="space-y-4">
-                        <!-- Day Row -->
-                        <div
-                            class="grid grid-cols-12 items-center gap-4 py-4 border-b border-slate-100 dark:border-slate-800/50 last:border-0">
-                            <div class="col-span-4 flex items-center gap-3">
-                                <input checked class="accent-primary size-5" type="checkbox" />
-                                <span class="font-bold">Monday</span>
-                            </div>
-                            <div class="col-span-8 flex items-center gap-4">
-                                <input
-                                    class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
-                                    type="time" value="09:00" />
-                                <span class="text-slate-400 text-xs font-bold uppercase">to</span>
-                                <input
-                                    class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
-                                    type="time" value="17:00" />
-                            </div>
-                        </div>
-                        <!-- More days... -->
+                    <div class="space-y-4" id="scheduleDaysContainer">
+                        <!-- Days will be rendered dynamically -->
+                        <div class="text-slate-400 text-sm italic text-center py-4">Please select a provider to view
+                            schedule.</div>
                     </div>
                 </section>
 
@@ -146,7 +134,158 @@
             </div>
         </div>
     </main>
-    <script src="../js/app.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/admin-auth.js"></script>
+    <script>
+        const providerSelect = document.getElementById('providerSelect');
+        const scheduleDaysContainer = document.getElementById('scheduleDaysContainer');
+        const saveScheduleBtn = document.getElementById('saveScheduleBtn');
+
+        const DAYS_OF_WEEK = [
+            { id: 1, name: 'Monday' },
+            { id: 2, name: 'Tuesday' },
+            { id: 3, name: 'Wednesday' },
+            { id: 4, name: 'Thursday' },
+            { id: 5, name: 'Friday' },
+            { id: 6, name: 'Saturday' },
+            { id: 0, name: 'Sunday' }
+        ];
+
+        let currentProviders = [];
+        let currentSchedules = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const clinicId = window.adminUser?.clinic_id || 1;
+            try {
+                const res = await smartbookApi.getAdminProviders(clinicId);
+                if (res.success) {
+                    currentProviders = res.data;
+                    renderProviderDropdown();
+                }
+            } catch (err) {
+                console.error("Failed to load providers", err);
+            }
+        });
+
+        function renderProviderDropdown() {
+            if (currentProviders.length === 0) {
+                providerSelect.innerHTML = '<option value="">No Providers Found</option>';
+                return;
+            }
+
+            providerSelect.innerHTML = currentProviders.map(p =>
+                `<option value="${p.id}">${p.full_name} (${p.specialization})</option>`
+            ).join('');
+
+            // Explicitly set the value to the first mapped option to prevent empty selection visual bug
+            providerSelect.value = currentProviders[0].id;
+
+            loadSelectedProviderSchedule();
+        }
+
+        providerSelect.addEventListener('change', loadSelectedProviderSchedule);
+
+        async function loadSelectedProviderSchedule() {
+            const providerId = providerSelect.value;
+            if (!providerId) return;
+
+            scheduleDaysContainer.innerHTML = '<div class="text-center py-4 text-slate-500">Loading schedule...</div>';
+
+            try {
+                const res = await smartbookApi.getProviderSchedule(providerId);
+                if (res.success) {
+                    currentSchedules = res.data;
+                    renderScheduleForm();
+                } else {
+                    scheduleDaysContainer.innerHTML = `<div class="text-center py-4 text-red-500">Error loading schedule</div>`;
+                }
+            } catch (err) {
+                console.error("Failed to load schedule", err);
+                scheduleDaysContainer.innerHTML = `<div class="text-center py-4 text-red-500">Connection error</div>`;
+            }
+        }
+
+        function renderScheduleForm() {
+            scheduleDaysContainer.innerHTML = '';
+
+            DAYS_OF_WEEK.forEach(dayInfo => {
+                // Find existing schedule for this day
+                const existing = currentSchedules.find(s => s.day_of_week === dayInfo.id);
+                const isEnabled = !!existing;
+                const startTime = existing ? existing.start_time.substring(0, 5) : '09:00';
+                const endTime = existing ? existing.end_time.substring(0, 5) : '17:00';
+
+                const row = document.createElement('div');
+                row.className = 'grid grid-cols-12 items-center gap-4 py-4 border-b border-slate-100 dark:border-slate-800/50 last:border-0';
+                row.innerHTML = `
+                    <div class="col-span-4 flex items-center gap-3">
+                        <input type="checkbox" class="accent-primary size-5 day-checkbox" data-day="${dayInfo.id}" ${isEnabled ? 'checked' : ''} />
+                        <span class="font-bold">${dayInfo.name}</span>
+                    </div>
+                    <div class="col-span-8 flex items-center gap-4 transition-opacity ${isEnabled ? '' : 'opacity-50 pointer-events-none'}" id="time-inputs-${dayInfo.id}">
+                        <input type="time" class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary start-time" value="${startTime}" data-day="${dayInfo.id}" />
+                        <span class="text-slate-400 text-xs font-bold uppercase">to</span>
+                        <input type="time" class="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary end-time" value="${endTime}" data-day="${dayInfo.id}" />
+                    </div>
+                `;
+
+                // Add event listener to toggle inputs state when checking/unchecking
+                const checkbox = row.querySelector('.day-checkbox');
+                const timeInputs = row.querySelector(`#time-inputs-${dayInfo.id}`);
+                checkbox.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        timeInputs.classList.remove('opacity-50', 'pointer-events-none');
+                    } else {
+                        timeInputs.classList.add('opacity-50', 'pointer-events-none');
+                    }
+                });
+
+                scheduleDaysContainer.appendChild(row);
+            });
+        }
+
+        saveScheduleBtn.addEventListener('click', async () => {
+            const providerId = providerSelect.value;
+            if (!providerId) return;
+
+            const newSchedules = [];
+            const checkboxes = document.querySelectorAll('.day-checkbox');
+
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    const dayId = cb.getAttribute('data-day');
+                    const startTimeInput = document.querySelector(`.start-time[data-day="${dayId}"]`);
+                    const endTimeInput = document.querySelector(`.end-time[data-day="${dayId}"]`);
+
+                    newSchedules.push({
+                        dayOfWeek: parseInt(dayId),
+                        startTime: startTimeInput.value,
+                        endTime: endTimeInput.value
+                    });
+                }
+            });
+
+            saveScheduleBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Saving...';
+            saveScheduleBtn.disabled = true;
+
+            try {
+                const res = await smartbookApi.updateProviderSchedule(providerId, newSchedules);
+                if (res.success) {
+                    alert('Schedule saved successfully!');
+                    loadSelectedProviderSchedule(); // Reload
+                } else {
+                    alert('Failed to save schedule: ' + res.error);
+                }
+            } catch (err) {
+                console.error("Save error", err);
+                alert('Connection error while saving.');
+            } finally {
+                saveScheduleBtn.innerHTML = '<span class="material-symbols-outlined">save</span> Save Changes';
+                saveScheduleBtn.disabled = false;
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -88,10 +88,29 @@ const updatePaymentInfo = async (id, paymentInfo) => {
     return res.rows[0];
 };
 
+/**
+ * Gets all appointments for today for a clinic.
+ */
+const getAppointmentsToday = async (clinicId) => {
+    const res = await db.query(
+        `SELECT a.*, p.full_name as patient_name, pr.full_name as provider_name, at.name as type_name
+         FROM appointments a
+         JOIN patients p ON a.patient_id = p.id
+         JOIN providers pr ON a.provider_id = pr.id
+         JOIN appointment_types at ON a.appointment_type_id = at.id
+         WHERE a.clinic_id = $1
+         AND DATE(a.scheduled_datetime) = CURRENT_DATE
+         ORDER BY a.scheduled_datetime ASC`,
+        [clinicId]
+    );
+    return res.rows;
+};
+
 module.exports = {
     create,
     getById,
     updateStatus,
     findPendingTransitions,
-    updatePaymentInfo
+    updatePaymentInfo,
+    getAppointmentsToday
 };

@@ -20,6 +20,9 @@ router.put('/providers/:id/schedule', adminController.updateProviderSchedule);
 router.get('/insurance/queue', insuranceController.getInsuranceQueue);
 router.post('/insurance/verify', insuranceController.updateVerificationStatus);
 
+// Appointments
+router.get('/appointments/today', adminController.getTodayAppointments);
+
 // Dashboard
 router.get('/stats', dashboardController.getDashboardStats);
 

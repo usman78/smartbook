@@ -36,8 +36,13 @@
         </div>
         <div class="flex items-center gap-4">
             <span class="text-white/80 text-sm font-medium">Step 5 of 6</span>
-            <div class="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
-                <div class="w-5/6 h-full bg-white rounded-full"></div>
+            <div class="flex gap-1">
+                <div class="h-2 w-5 bg-white rounded-full"></div>
+                <div class="h-2 w-5 bg-white rounded-full"></div>
+                <div class="h-2 w-5 bg-white rounded-full"></div>
+                <div class="h-2 w-5 bg-white rounded-full"></div>
+                <div class="h-2 w-5 bg-white rounded-full"></div>
+                <div class="h-2 w-5 bg-white/20 rounded-full"></div>
             </div>
         </div>
     </header>
@@ -87,9 +92,16 @@
                             <span class="material-symbols-outlined absolute left-3 top-3 text-slate-400">phone</span>
                             <input id="phone"
                                 class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-all"
-                                placeholder="(555) 000-0000" type="tel" required />
+                                placeholder="(555) 000-0000" type="tel" required pattern="^\(\d{3}\) \d{3}-\d{4}$"
+                                title="Format: (555) 000-0000" maxlength="14" />
                         </div>
                     </div>
+                </div>
+
+                <!-- Phone Validation Feedback -->
+                <div id="phoneValidationMsg" class="hidden text-sm text-red-500 mt-2 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">error</span>
+                    Please enter a valid 10-digit phone number.
                 </div>
 
                 <div class="bg-primary/5 border border-primary/20 rounded-lg p-5">
@@ -142,6 +154,19 @@
         }
 
         const form = document.querySelector('form');
+        const phoneInput = document.getElementById('phone');
+        const phoneValidationMsg = document.getElementById('phoneValidationMsg');
+
+        // Phone number formatting
+        phoneInput.addEventListener('input', function (e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+            e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+
+            if (e.target.value.length === 14) {
+                phoneInput.classList.remove('border-red-500');
+                phoneValidationMsg.classList.add('hidden');
+            }
+        });
 
         form.onsubmit = (e) => {
             e.preventDefault();
@@ -159,9 +184,33 @@
                 return;
             }
 
+            // Phone validation check before submit
+            const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
+            if (!phoneRegex.test(patientData.phone)) {
+                phoneInput.classList.add('border-red-500');
+                phoneValidationMsg.classList.remove('hidden');
+                phoneInput.focus();
+
+                // Add a shake animation to the input
+                phoneInput.classList.add('animate-[shake_0.5s_ease-in-out]');
+                setTimeout(() => phoneInput.classList.remove('animate-[shake_0.5s_ease-in-out]'), 500);
+                return;
+            }
+
             sessionStorage.setItem('patientData', JSON.stringify(patientData));
             window.location.href = 'secure_deposit.html';
         };
+
+        // Add Tailwind shake keyframes to head
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
 
         document.querySelector('.btn-secondary').onclick = (e) => {
             e.preventDefault();

@@ -35,11 +35,17 @@
             <h1 class="text-white text-xl font-bold tracking-tight">SmartBook</h1>
         </div>
         <div class="flex items-center gap-4">
-            <span class="text-white/80 text-sm font-medium">Step 1 of 6</span>
-            <div class="w-32 h-2 bg-white/20 rounded-full overflow-hidden">
-                <div class="w-1/6 h-full bg-white rounded-full"></div>
+            <div class="flex items-center gap-4">
+                <span class="text-white/80 text-sm font-medium">Step 1 of 6</span>
+                <div class="flex gap-1">
+                    <div class="h-2 w-5 bg-white rounded-full"></div>
+                    <div class="h-2 w-5 bg-white/20 rounded-full"></div>
+                    <div class="h-2 w-5 bg-white/20 rounded-full"></div>
+                    <div class="h-2 w-5 bg-white/20 rounded-full"></div>
+                    <div class="h-2 w-5 bg-white/20 rounded-full"></div>
+                    <div class="h-2 w-5 bg-white/20 rounded-full"></div>
+                </div>
             </div>
-        </div>
     </header>
 
     <main class="flex-1 relative flex flex-center px-4 py-12 overflow-hidden">
@@ -96,11 +102,17 @@
                     <span class="material-symbols-outlined text-sm">info</span>
                     <span class="text-sm font-medium">Your data is secured with enterprise-grade encryption</span>
                 </div>
-                <button class="btn btn-primary min-w-[200px] h-14 text-lg">
+                <button id="continueBtn" class="btn btn-primary min-w-[200px] h-14 text-lg transition-transform">
                     <span>Continue</span>
                     <span
                         class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </button>
+            </div>
+            <!-- Validation Feedback Element -->
+            <div id="validationMessage"
+                class="hidden text-center text-red-500 font-bold mt-2 animate-bounce flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">error</span>
+                Please select 'New' or 'Returning' patient to continue.
             </div>
         </div>
     </main>
@@ -111,7 +123,8 @@
 
     <script src="../js/app.js"></script>
     <script>
-        const continueBtn = document.querySelector('.btn-primary');
+        const continueBtn = document.getElementById('continueBtn');
+        const validationMessage = document.getElementById('validationMessage');
 
         // --- IMPORTANT: Clear all previous booking session data ---
         // This ensures a fresh start every time Step 1 is loaded.
@@ -123,9 +136,9 @@
         sessionStorage.removeItem('reservation');
         sessionStorage.removeItem('patientData');
 
-        // Start with Continue button disabled
-        continueBtn.disabled = true;
-        continueBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        // Set visual disabled state without disabling native click
+        continueBtn.classList.add('opacity-50', 'bg-slate-300', 'text-slate-500');
+        continueBtn.classList.remove('btn-primary');
 
         document.querySelectorAll('.card').forEach((card, index) => {
             card.onclick = () => {
@@ -140,18 +153,41 @@
                 sessionStorage.setItem('isNewPatient', isNew);
                 sessionStorage.setItem('patientStatus', isNew ? 'new' : 'returning');
 
-                // Enable Continue button
-                continueBtn.disabled = false;
-                continueBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                // Remove validation message if it was showing
+                validationMessage.classList.add('hidden');
+
+                // Enable visual Continue button
+                continueBtn.classList.remove('opacity-50', 'bg-slate-300', 'text-slate-500');
+                continueBtn.classList.add('btn-primary');
             };
         });
 
         continueBtn.onclick = () => {
             if (sessionStorage.getItem('isNewPatient') !== null) {
                 window.location.href = 'step_2_treatment_selection.html';
+            } else {
+                // Show validation feedback
+                validationMessage.classList.remove('hidden');
+
+                // Shake animation for the cards
+                const cards = document.querySelectorAll('.card');
+                cards.forEach(c => {
+                    c.classList.add('animate-[shake_0.5s_ease-in-out]');
+                    setTimeout(() => c.classList.remove('animate-[shake_0.5s_ease-in-out]'), 500);
+                });
             }
-            // No else needed — button is disabled if nothing selected
         };
+
+        // Add Tailwind shake keyframes to head
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 

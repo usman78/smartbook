@@ -122,56 +122,51 @@
     <!-- Scripts -->
     <script src="/js/api.js"></script>
     <script src="/js/app.js"></script>
+    <script src="/js/admin-auth.js"></script>
     <script>
-        // Security Check
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-            window.location.href = 'admin_login.html';
-        }
-
-        const adminUser = JSON.parse(localStorage.getItem('adminUser') || '{}');
-
         document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                const response = await api.getInsuranceQueue('pending');
-                if (response.success) {
-                    renderQueue(response.data);
-                    document.getElementById('pendingCount').textContent = `${response.data.length} Pending Verifications`;
-                } else {
-                    console.error('API Error:', response.error);
-                    document.getElementById('standardQueueBody').innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-red-500">Error: ${response.error || 'Unknown error'}</td></tr>`;
+
+            document.addEventListener('DOMContentLoaded', async () => {
+                try {
+                    const response = await api.getInsuranceQueue('pending');
+                    if (response.success) {
+                        renderQueue(response.data);
+                        document.getElementById('pendingCount').textContent = `${response.data.length} Pending Verifications`;
+                    } else {
+                        console.error('API Error:', response.error);
+                        document.getElementById('standardQueueBody').innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-red-500">Error: ${response.error || 'Unknown error'}</td></tr>`;
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch insurance queue:', error);
+                    document.getElementById('standardQueueBody').innerHTML = '<tr><td colspan="3" class="px-6 py-8 text-center text-slate-500">Failed to load data.</td></tr>';
                 }
-            } catch (error) {
-                console.error('Failed to fetch insurance queue:', error);
-                document.getElementById('standardQueueBody').innerHTML = '<tr><td colspan="3" class="px-6 py-8 text-center text-slate-500">Failed to load data.</td></tr>';
-            }
-        });
+            });
 
-        function renderQueue(items) {
-            const criticalGrid = document.getElementById('criticalGrid');
-            const tableBody = document.getElementById('standardQueueBody');
+            function renderQueue(items) {
+                const criticalGrid = document.getElementById('criticalGrid');
+                const tableBody = document.getElementById('standardQueueBody');
 
-            criticalGrid.innerHTML = '';
-            tableBody.innerHTML = '';
+                criticalGrid.innerHTML = '';
+                tableBody.innerHTML = '';
 
-            const criticalItems = items.filter(i => i.urgency === 'critical');
-            const standardItems = items.filter(i => i.urgency !== 'critical');
+                const criticalItems = items.filter(i => i.urgency === 'critical');
+                const standardItems = items.filter(i => i.urgency !== 'critical');
 
-            if (criticalItems.length === 0) {
-                document.getElementById('criticalSection').classList.add('hidden');
-            } else {
-                document.getElementById('criticalSection').classList.remove('hidden');
-            }
+                if (criticalItems.length === 0) {
+                    document.getElementById('criticalSection').classList.add('hidden');
+                } else {
+                    document.getElementById('criticalSection').classList.remove('hidden');
+                }
 
-            if (items.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="3" class="px-6 py-8 text-center text-slate-500">No pending verifications found.</td></tr>';
-                return;
-            }
+                if (items.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="3" class="px-6 py-8 text-center text-slate-500">No pending verifications found.</td></tr>';
+                    return;
+                }
 
-            criticalItems.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'card p-6 flex flex-col md:flex-row gap-6 hover:border-primary/50 transition-all group';
-                div.innerHTML = `
+                criticalItems.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'card p-6 flex flex-col md:flex-row gap-6 hover:border-primary/50 transition-all group';
+                    div.innerHTML = `
             <div class="flex-1">
                 <p class="text-[10px] font-black uppercase text-red-500 mb-1">Critical Urgency</p>
                 <h4 class="text-2xl font-black mb-1">${item.patient_name}</h4>
@@ -186,13 +181,13 @@
                 <span class="material-symbols-outlined text-primary text-4xl">person</span>
             </div>
         `;
-                criticalGrid.appendChild(div);
-            });
+                    criticalGrid.appendChild(div);
+                });
 
-            standardItems.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50 dark:hover:bg-white/5 transition-colors';
-                tr.innerHTML = `
+                standardItems.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-50 dark:hover:bg-white/5 transition-colors';
+                    tr.innerHTML = `
             <td class="px-6 py-4">
                 <p class="font-bold">${item.patient_name}</p>
                 <p class="text-[10px] text-slate-400 uppercase font-black">ID: ${item.id.substring(0, 8)}</p>
@@ -205,19 +200,19 @@
                 <button class="btn btn-primary py-1.5 px-4 text-xs" onclick="verify('${item.id}')">Verify</button>
             </td>
         `;
-                tableBody.appendChild(tr);
-            });
-        }
+                    tableBody.appendChild(tr);
+                });
+            }
 
-        async function verify(appointmentId) {
-            alert('Opening verification for appointment ' + appointmentId);
-        }
+            async function verify(appointmentId) {
+                alert('Opening verification for appointment ' + appointmentId);
+            }
 
-        function logout() {
-            localStorage.removeItem('adminToken');
-            localStorage.removeItem('adminUser');
-            window.location.href = 'admin_login.html';
-        }
+            function logout() {
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('adminUser');
+                window.location.href = 'admin_login.html';
+            }
     </script>
 </body>
 

@@ -142,6 +142,20 @@ const mergePatients = async (req, res) => {
     }
 };
 
+/**
+ * GET /api/admin/appointments/today
+ */
+const getTodayAppointments = async (req, res) => {
+    try {
+        const { clinicId } = req.query;
+        const Appointment = require('../models/appointmentModel');
+        const appointments = await Appointment.getAppointmentsToday(clinicId);
+        res.json({ success: true, data: appointments });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
 module.exports = {
     getProviders,
     createProvider,
@@ -149,5 +163,6 @@ module.exports = {
     updateProviderSchedule,
     getWaitlist,
     notifyWaitlist,
-    mergePatients
+    mergePatients,
+    getTodayAppointments
 };

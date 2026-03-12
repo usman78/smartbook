@@ -103,7 +103,7 @@
                     <div
                         class="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-slate-800">
                         <span class="material-symbols-outlined text-primary">calendar_today</span>
-                        <span class="font-bold text-sm">Feb 20, 2026</span>
+                        <span id="currentDateDisplay" class="font-bold text-sm">Feb 20, 2026</span>
                     </div>
                     <div class="relative">
                         <span
@@ -247,35 +247,49 @@
     </div>
     <script src="/js/api.js"></script>
     <script src="/js/app.js"></script>
-    async function loadSchedule() {
-    try {
-    // For MVP, we use the dashboard stats endpoint which might need to return appointments too
-    // Or let's assume a generic admin fetch for today's appts
-    const result = await smartbookApi.getInsuranceQueue('confirmed');
-    if (result.success) {
-    renderSchedule(result.data);
-    }
-    } catch (err) {
-    console.error('Failed to load schedule:', err);
-    }
-    }
+    <script src="/js/admin-auth.js"></script>
+    <script>
+        async function loadDashboardStats() {
+            try {
+                const result = await smartbookApi.getDashboardStats();
+                if (result.success) {
+                    const stats = result.data;
+                    document.getElementById('totalBookings').textContent = stats.totalBookings || 0;
+                    document.getElementById('totalRevenue').textContent = `$${(stats.totalRevenue || 0).toFixed(2)}`;
+                    document.getElementById('pendingInsurance').textContent = stats.pendingInsurance || 0;
+                }
+            } catch (err) {
+                console.error('Failed to load dashboard stats:', err);
+            }
+        }
 
-    function renderSchedule(appointments) {
-    const body = document.getElementById('scheduleBody');
-    body.innerHTML = appointments.length ? '' : '<tr>
-        <td colspan="4" class="p-8 text-center text-slate-400 italic font-medium">No appointments scheduled for today.
-        </td>
-    </tr>';
+        async function loadSchedule() {
+            try {
+                const clinicId = window.adminUser?.clinic_id || 1;
+                const result = await smartbookApi.getAppointmentsToday(clinicId);
+                if (result.success) {
+                    renderSchedule(result.data);
+                }
+            } catch (err) {
+                console.error('Failed to load schedule:', err);
+            }
+        }
 
-    appointments.forEach(appt => {
-    const timeStr = new Date(appt.scheduled_datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const isCosmetic = appt.type_name?.toLowerCase().includes('botox') ||
-    appt.type_name?.toLowerCase().includes('filler');
-    const hasHold = appt.payment_info?.paymentStrategy === 'auth_hold' && !appt.payment_info?.captured;
+        function renderSchedule(appointments) {
+            const body = document.getElementById('scheduleBody');
+            body.innerHTML = appointments.length ? '' : `<tr>
+                <td colspan="4" class="p-8 text-center text-slate-400 italic font-medium">No appointments scheduled for today.</td>
+            </tr>`;
 
-    const row = document.createElement('tr');
-    row.className = 'hover:bg-slate-50 dark:hover:bg-white/5 transition-colors';
-    row.innerHTML = `
+            appointments.forEach(appt => {
+                const timeStr = new Date(appt.scheduled_datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const isCosmetic = appt.type_name?.toLowerCase().includes('botox') ||
+                    appt.type_name?.toLowerCase().includes('filler');
+                const hasHold = appt.payment_info?.paymentStrategy === 'auth_hold' && !appt.payment_info?.captured;
+
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-50 dark:hover:bg-white/5 transition-colors';
+                row.innerHTML = `
     <td class="px-6 py-5 font-black text-primary">${timeStr}</td>
     <td class="px-6 py-5 font-bold">${appt.provider_name || 'Unassigned'}</td>
     <td class="px-6 py-5">
@@ -295,54 +309,54 @@
         </button>
     </td>
     `;
-    body.appendChild(row);
-    });
-    }
+                body.appendChild(row);
+            });
+        }
 
-    async function processNoShow(id) {
-    if (!confirm('Charge no-show deposit for this appointment?')) return;
-    try {
-    const result = await smartbookApi.processNoShow(id);
-    if (result.success) {
-    alert('No-show fee captured');
-    loadSchedule();
-    } else {
-    alert('Error: ' + result.error);
-    }
-    } catch (err) {
-    console.error('No-show processing failed:', err);
-    }
-    }
+        async function processNoShow(id) {
+            if (!confirm('Charge no-show deposit for this appointment?')) return;
+            try {
+                const result = await smartbookApi.processNoShow(id);
+                if (result.success) {
+                    alert('No-show fee captured');
+                    loadSchedule();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (err) {
+                console.error('No-show processing failed:', err);
+            }
+        }
 
-    function showMergeModal() {
-    document.getElementById('mergeModal').classList.remove('hidden');
-    }
+        function showMergeModal() {
+            document.getElementById('mergeModal').classList.remove('hidden');
+        }
 
-    function hideMergeModal() {
-    document.getElementById('mergeModal').classList.add('hidden');
-    }
+        function hideMergeModal() {
+            document.getElementById('mergeModal').classList.add('hidden');
+        }
 
-    async function executeMerge() {
-    const keepId = document.getElementById('mergeKeepId').value;
-    const fromId = document.getElementById('mergeFromId').value;
-    if (!keepId || !fromId) return alert('Both IDs required');
+        async function executeMerge() {
+            const keepId = document.getElementById('mergeKeepId').value;
+            const fromId = document.getElementById('mergeFromId').value;
+            if (!keepId || !fromId) return alert('Both IDs required');
 
-    try {
-    const result = await smartbookApi.mergePatients(keepId, fromId);
-    if (result.success) {
-    alert('Patients merged successfully');
-    hideMergeModal();
-    loadSchedule();
-    } else {
-    alert('Error: ' + result.error);
-    }
-    } catch (err) {
-    console.error('Merge failed:', err);
-    }
-    }
+            try {
+                const result = await smartbookApi.mergePatients(keepId, fromId);
+                if (result.success) {
+                    alert('Patients merged successfully');
+                    hideMergeModal();
+                    loadSchedule();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (err) {
+                console.error('Merge failed:', err);
+            }
+        }
 
-    loadDashboardStats();
-    loadSchedule();
+        loadDashboardStats();
+        loadSchedule();
     </script>
 </body>
 
